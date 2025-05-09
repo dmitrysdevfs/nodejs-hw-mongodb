@@ -21,7 +21,7 @@ export function setupServer() {
   );
 
   app.get('/', (req, res) => {
-    res.json({ message: 'Hello, student!' });
+    res.json({ message: 'Hello, Phonebook!' });
   });
 
   app.use((req, res, next) => {

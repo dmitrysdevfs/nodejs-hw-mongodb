@@ -17,31 +17,23 @@ import {
 
 const router = Router();
 
-router.get('/contacts', ctrlWrapper(getContactsController));
+router.get('/', ctrlWrapper(getContactsController));
 
-router.get(
-  '/contacts/:contactId',
-  isValidID,
-  ctrlWrapper(getContactByIdController),
-);
+router.get('/:contactId', isValidID, ctrlWrapper(getContactByIdController));
 
 router.post(
-  '/contacts',
+  '/',
   validateBody(createContactSchema),
   ctrlWrapper(createContactController),
 );
 
 router.patch(
-  '/contacts/:contactId',
+  '/:contactId',
   isValidID,
   validateBody(updateContactSchema),
   ctrlWrapper(updateContactController),
 );
 
-router.delete(
-  '/contacts/:contactId',
-  isValidID,
-  ctrlWrapper(deleteContactController),
-);
+router.delete('/:contactId', isValidID, ctrlWrapper(deleteContactController));
 
 export default router;

@@ -1,6 +1,8 @@
+import { randomBytes } from 'crypto';
 import bcrypt from 'bcrypt';
 import createHttpError from 'http-errors';
 import { User } from '../db/models/user.js';
+import { Session } from '../db/models/session.js';
 
 export const registerUser = async (payload) => {
   const user = await User.findOne({ email: payload.email });
@@ -14,5 +16,27 @@ export const registerUser = async (payload) => {
   return await User.create({
     ...payload,
     password: encryptedPassword,
+  });
+};
+
+export const loginUser = async (email, password) => {
+  const user = await User.findOne({ email });
+
+  if (user === null) {
+    throw new createHttpError.Unauthorized('Email or password is incorrect');
+  }
+
+  const isMatch = await bcrypt.compare(password, user.password);
+
+  if (isMatch !== true) {
+    throw new createHttpError.Unauthorized('Email or password is incorrect');
+  }
+
+  return Session.create({
+    userId: user._id,
+    accessToken: randomBytes(30).toString('base64'),
+    refreshToken: randomBytes(30).toString('base64'),
+    accessTokenValidUntil: new Date(Date.now() + 15 * 60 * 1000),
+    refreshTokenValidUntil: new Date(Date.now() + 24 * 60 * 60 * 30 * 1000),
   });
 };

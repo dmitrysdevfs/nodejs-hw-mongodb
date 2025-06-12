@@ -1,8 +1,12 @@
+import jwt from 'jsonwebtoken';
 import { randomBytes } from 'crypto';
 import bcrypt from 'bcrypt';
 import createHttpError from 'http-errors';
 import { User } from '../db/models/user.js';
 import { Session } from '../db/models/session.js';
+
+import { sendMail } from '../utils/sendMail.js';
+import { getEnvVar } from '../utils/getEnvVar.js';
 
 export const registerUser = async (payload) => {
   const user = await User.findOne({ email: payload.email });
@@ -71,4 +75,29 @@ export const refreshUserSession = async (sessionId, refreshToken) => {
     accessTokenValidUntil: new Date(Date.now() + 15 * 60 * 1000),
     refreshTokenValidUntil: new Date(Date.now() + 24 * 60 * 60 * 30 * 1000),
   });
+};
+
+export const sendResetEmail = async (email) => {
+  const user = await User.findOne({ email });
+
+  if (user === null) {
+    throw new createHttpError.NotFound('User not found');
+  }
+
+  const resetToken = jwt.sign(
+    {
+      sub: user._id,
+      name: user.name,
+    },
+    getEnvVar('JWT_SECRET'),
+    { expiresIn: '5m' },
+  );
+
+  await sendMail(
+    user.email,
+    'Reset your password',
+    `<p>Click <a href="${getEnvVar(
+      'APP_DOMAIN',
+    )}/reset-password?token=${resetToken}">here</a> to reset your password!</p>`,
+  );
 };

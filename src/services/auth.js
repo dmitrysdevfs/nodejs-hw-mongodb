@@ -1,3 +1,6 @@
+import * as fs from 'node:fs';
+import path from 'node:path';
+import Handlebars from 'handlebars';
 import jwt from 'jsonwebtoken';
 import { randomBytes } from 'crypto';
 import bcrypt from 'bcrypt';
@@ -7,6 +10,13 @@ import { Session } from '../db/models/session.js';
 
 import { sendMail } from '../utils/sendMail.js';
 import { getEnvVar } from '../utils/getEnvVar.js';
+
+const RESET_PASSWORD_TEMPLATE = fs.readFileSync(
+  path.resolve('src', 'templates', 'reset-password.hbs'),
+  'UTF-8',
+);
+
+console.log(RESET_PASSWORD_TEMPLATE);
 
 export const registerUser = async (payload) => {
   const user = await User.findOne({ email: payload.email });
@@ -93,11 +103,14 @@ export const sendResetEmail = async (email) => {
     { expiresIn: '5m' },
   );
 
+  const html = Handlebars.compile(RESET_PASSWORD_TEMPLATE);
+
   await sendMail(
     user.email,
     'Reset your password',
-    `<p>Click <a href="${getEnvVar(
-      'APP_DOMAIN',
-    )}/reset-password?token=${resetToken}">here</a> to reset your password!</p>`,
+    html({
+      name: user.name,
+      link: `${getEnvVar('APP_DOMAIN')}/reset-password?token=${resetToken}`,
+    }),
   );
 };

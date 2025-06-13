@@ -16,8 +16,6 @@ const RESET_PASSWORD_TEMPLATE = fs.readFileSync(
   'UTF-8',
 );
 
-console.log(RESET_PASSWORD_TEMPLATE);
-
 export const registerUser = async (payload) => {
   const user = await User.findOne({ email: payload.email });
 
@@ -113,4 +111,29 @@ export const sendResetEmail = async (email) => {
       link: `${getEnvVar('APP_DOMAIN')}/reset-password?token=${resetToken}`,
     }),
   );
+};
+
+export const resetPassword = async (password, token) => {
+  try {
+    const decoded = jwt.verify(token, getEnvVar('JWT_SECRET'));
+
+    const user = await User.findById(decoded.sub);
+
+    if (user === null) {
+      throw new createHttpError.NotFound('User not found');
+    }
+
+    const encryptedPassword = await bcrypt.hash(password, 10);
+
+    await User.findByIdAndUpdate(user._id, { password: encryptedPassword });
+  } catch (error) {
+    if (
+      error.name === 'JsonWebTokenError' ||
+      error.name === 'TokenExpiredError'
+    ) {
+      throw new createHttpError.Unauthorized('Token is expired or invalid.');
+    }
+
+    throw error;
+  }
 };

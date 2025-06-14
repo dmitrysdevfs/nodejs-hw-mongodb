@@ -11,6 +11,7 @@ import {
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 import { parseSortParams } from '../utils/parseSortParams.js';
 import { parseFilterParams } from '../utils/parseFilterParams.js';
+import { uploadToCloud } from '../utils/uploadToCloud.js';
 
 export const getContactsController = async (req, res) => {
   console.log(req.user);
@@ -57,7 +58,13 @@ export const getContactByIdController = async (req, res, next) => {
 };
 
 export const createContactController = async (req, res) => {
-  const contact = await createContact({ ...req.body, userId: req.user.id });
+  const photo = await uploadToCloud(req.file?.path);
+
+  const contact = await createContact({
+    ...req.body,
+    userId: req.user.id,
+    photo,
+  });
 
   res.status(201).json({
     status: 201,
@@ -70,7 +77,13 @@ export const updateContactController = async (req, res, next) => {
   const { contactId } = req.params;
   const userId = req.user.id;
 
-  const result = await updateContact(contactId, userId, req.body);
+  const updatedData = { ...req.body };
+
+  if (req.file) {
+    updatedData.photo = await uploadToCloud(req.file.path);
+  }
+
+  const result = await updateContact(contactId, userId, updatedData);
 
   if (!result) {
     next(createHttpError(404, 'Contact not found'));

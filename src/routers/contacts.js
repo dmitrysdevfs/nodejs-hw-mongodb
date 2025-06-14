@@ -15,6 +15,8 @@ import {
   updateContactSchema,
 } from '../validation/contact.js';
 
+import { upload } from '../middlewares/upload.js';
+
 const router = Router();
 
 router.get('/', ctrlWrapper(getContactsController));
@@ -23,6 +25,7 @@ router.get('/:contactId', isValidID, ctrlWrapper(getContactByIdController));
 
 router.post(
   '/',
+  upload.single('photo'),
   validateBody(createContactSchema),
   ctrlWrapper(createContactController),
 );
@@ -30,6 +33,7 @@ router.post(
 router.patch(
   '/:contactId',
   isValidID,
+  upload.single('photo'),
   validateBody(updateContactSchema),
   ctrlWrapper(updateContactController),
 );

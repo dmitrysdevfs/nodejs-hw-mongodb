@@ -1,0 +1,37 @@
+openapi: 3.1.0
+
+info:
+  title: Phonebook app
+  version: 1.0.0
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  description: >
+    This is the official API documentation for the Phonebook app.
+    The API allows users to manage their contacts, including adding,
+    editing, and deleting them.
+
+    The authentication system supports secure login and registration,
+    including token-based authorization.
+
+    This documentation follows the OpenAPI 3.1.0 standard and can be
+    previewed using Redocly or Swagger-UI.
+
+tags:
+  - name: Contacts
+    description: Manage contacts in the phonebook, including creation, update, deletion, and retrieval.
+
+  - name: Auth
+    description: User authentication and session management, supporting login, registration, and token-based authorization.
+
+servers:
+  - url: http://localhost:3000
+  - url: phonebook-app-0rap.onrender.com
+
+paths:
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer

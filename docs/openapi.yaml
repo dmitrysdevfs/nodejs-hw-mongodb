@@ -29,6 +29,9 @@ servers:
   - url: phonebook-app-0rap.onrender.com
 
 paths:
+  /contacts:
+    post:
+      $ref: '../swagger/paths/contacts/post.yaml'
   /contacts/{id}:
     get:
       $ref: '../swagger/paths/contacts/{id}/get.yaml'

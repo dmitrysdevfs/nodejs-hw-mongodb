@@ -19,7 +19,7 @@ properties:
   phoneNumber:
     type: string
     description: Phone number of the contact
-    example: +380631234567
+    example: '+380631234567'
   email:
     type:
       - string

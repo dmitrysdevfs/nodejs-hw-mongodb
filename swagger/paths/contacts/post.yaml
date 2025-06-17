@@ -1,0 +1,76 @@
+tags:
+  - Contacts
+summary: Create a new contact
+operationId: createContact
+description: >
+  Create a new contact and adds it to the user's personal contact list.
+  This endpoint supports optional email and photo fields, and requires a valid access token (bearerAuth).
+
+    The request must be sent as `multipart/form-data` to enable optional photo upload.
+    The `contactType` must be one of: `work`, `home`, or `personal`.
+security:
+  - bearerAuth: []
+requestBody:
+  content:
+    multipart/form-data:
+      schema:
+        type: object
+        required:
+          - name
+          - phoneNumber
+          - contactType
+        properties:
+          name:
+            type: string
+            description: Full name of the contact
+            example: John Doe
+          phoneNumber:
+            type: string
+            description: Phone number of the contact
+            example: '+380631234567'
+          email:
+            type:
+              - string
+              - 'null'
+            description: Email address of the contact (optional)
+            example: john@example.com
+          isFavourite:
+            type: boolean
+            description: Whether the contact is marked as favourite
+            example: true
+            default: false
+          contactType:
+            type: string
+            description: Category of the contact
+            enum: [work, home, personal]
+            example: personal
+          photo:
+            type:
+              - string
+              - 'null'
+            format: binary
+            description: Contact photo file (optional)
+responses:
+  '201':
+    description: Successfully created a new contact
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 201
+            message:
+              type: string
+              example: Successfully created a contact!
+            data:
+              $ref: ../../components/schemas/contact.yaml
+  '401':
+    $ref: ../../components/responses/401.yaml
+  '500':
+    $ref: ../../components/responses/500.yaml

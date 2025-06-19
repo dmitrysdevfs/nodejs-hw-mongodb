@@ -1,0 +1,97 @@
+tags:
+  - Contacts
+summary: Update an existing contact by ID
+operationId: updateContactById
+description: >
+  Updates one or more fields of an existing contact that belongs to the authenticated user.
+  The request must be sent as `multipart/form-data` to support optional photo updates.
+
+    Only provided fields will be updated; omitted fields will remain unchanged.
+    A valid access token (bearerAuth) is required.
+security:
+  - bearerAuth: []
+parameters:
+  - in: path
+    name: id
+    required: true
+    description: Unique identifier of the contact (MongoDB ObjectId)
+    schema:
+      type: string
+      example: 64f7e05a0c0e5568fda154c8
+requestBody:
+  content:
+    multipart/form-data:
+      schema:
+        type: object
+        properties:
+          name:
+            type: string
+            description: Full name of the contact
+            example: John Doe
+          phoneNumber:
+            type: string
+            description: Phone number of the contact
+            example: '+380631234567'
+          email:
+            type:
+              - string
+              - 'null'
+            description: Email address of the contact (optional)
+            example: john@example.com
+          isFavourite:
+            type: boolean
+            description: Whether the contact is marked as favourite
+            example: true
+            default: false
+          contactType:
+            type: string
+            description: Category of the contact
+            enum: [work, home, personal]
+            example: personal
+          photo:
+            type:
+              - string
+              - 'null'
+            format: binary
+            description: Contact photo file (optional)
+responses:
+  '200':
+    description: Successfully updated a contact
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: Successfully patched a contact!
+            data:
+              type: object
+              $ref: ../../../components/schemas/contact.yaml
+  '401':
+    $ref: ../../../components/responses/401.yaml
+  '404':
+    description: Contact not found or inaccessible
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+          properties:
+            status:
+              type: integer
+              example: 404
+            message:
+              type: string
+              example: Contact not found
+  '500':
+    $ref: ../../../components/responses/500.yaml

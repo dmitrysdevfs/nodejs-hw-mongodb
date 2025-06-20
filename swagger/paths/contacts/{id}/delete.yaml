@@ -1,0 +1,39 @@
+tags:
+  - Contacts
+summary: Delete an existing contact by ID
+operationId: deleteContactById
+description: >
+  Deletes a contact that belongs to the authenticated user by the specified ID.
+    Requires a valid access token (bearerAuth).
+
+    If the contact does not exist or is not accessible by the user,
+    a `404 Not Found` response will be returned.
+security:
+  - bearerAuth: []
+parameters:
+  - in: path
+    name: id
+    required: true
+    description: Unique identifier of the contact (MongoDB ObjectId)
+    schema:
+      type: string
+      example: 64f7e05a0c0e5568fda154c8
+responses:
+  '204':
+    description: Contact deleted successfully
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+          properties:
+            status:
+              type: integer
+              example: 204
+  '401':
+    $ref: ../../../components/responses/401.yaml
+  '404':
+    $ref: ../../../components/responses/404.yaml
+  '500':
+    $ref: ../../../components/responses/500.yaml

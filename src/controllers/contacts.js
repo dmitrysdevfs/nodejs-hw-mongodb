@@ -57,8 +57,20 @@ export const getContactByIdController = async (req, res, next) => {
   });
 };
 
-export const createContactController = async (req, res) => {
-  const photo = await uploadToCloud(req.file?.path);
+export const createContactController = async (req, res, next) => {
+  let photo = null;
+
+  if (req.file?.path) {
+    try {
+      photo = await uploadToCloud(req.file?.path);
+    } catch (error) {
+      return next(
+        new createHttpError.InternalServerError(
+          'Failed to upload contact photo',
+        ),
+      );
+    }
+  }
 
   const contact = await createContact({
     ...req.body,

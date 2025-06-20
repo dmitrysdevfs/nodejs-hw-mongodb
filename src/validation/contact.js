@@ -20,7 +20,7 @@ export const createContactSchema = Joi.object({
   email: emailValidation.optional(),
   isFavourite: Joi.boolean().optional(),
   contactType: contactTypeValidation.required(),
-});
+}).unknown(true);
 
 export const updateContactSchema = Joi.object({
   name: nameValidation.optional(),
@@ -28,4 +28,4 @@ export const updateContactSchema = Joi.object({
   email: emailValidation.optional(),
   isFavourite: Joi.boolean().optional(),
   contactType: contactTypeValidation.optional(),
-});
+}).unknown(true);

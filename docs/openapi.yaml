@@ -25,7 +25,7 @@ tags:
     description: User authentication and session management, supporting login, registration, and token-based authorization.
 
 servers:
-  - url: http://localhost:3000
+  - url: http://localhost:5000
   - url: phonebook-app-0rap.onrender.com
 
 paths:
